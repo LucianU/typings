@@ -1,21 +1,4 @@
-import * as fs from "fs";
-
-main();
-
-function main() {
-    const droplet = {
-        name: "my-droplet",
-        region: Region.FRA1,
-        size: "512mb",
-        image: Image.UBUNTU_22_04,
-        ssh_keys: ["e3:90:27:0c:bc:aa:5e:0c:39:aa:c6:63:34:f6:30:af"],
-    };
-    const dropletConfig = mkDroplet(droplet);
-    fs.writeFileSync("do.tf.json", dropletConfig);
-}
-
-
-function mkDroplet(droplet: Droplet): string {
+export function mkDroplet(droplet: Droplet): string {
   return JSON.stringify({
     resource: {
       digitalocean_droplet: {
@@ -37,7 +20,7 @@ function mkDroplet(droplet: Droplet): string {
 }
 
 
-interface Droplet {
+export interface Droplet {
   name: string;
   size: string;
   image: Image;
@@ -57,7 +40,7 @@ interface Droplet {
 }
 
 
-enum Image {
+export enum Image {
   ALMALINUX_8 = "almalinux-8-x64",
   ALMALINUX_9 = "almalinux-9-x64",
   CENTOS_7 = "centos-7-x64",
@@ -77,7 +60,7 @@ enum Image {
   UBUNTU_22_10 = "ubuntu-22-10-x64",
 }
 
-enum Region {
+export enum Region {
   NYC1 = 'nyc1',
   NYC2 = 'nyc2',
   NYC3 = 'nyc3',
