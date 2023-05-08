@@ -1,10 +1,10 @@
-function buildPythonPackage(): Derivation {
+function buildPythonPackage(): Package {
 }
 
-function mkDerivation(): Derivation {
+function mkDerivation(): Package {
 }
 
-interface Derivation {
+export interface Package {
   args: any;            // Arbitrary arguments passed to the derivation.
 
   buildCommand: string; // Shell command used to build the derivation.
