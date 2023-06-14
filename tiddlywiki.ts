@@ -1,28 +1,84 @@
 import { Package } from './nix.ts';
 
 
-interface TiddlywikiInstance {
+interface Instance {
+  config: (options: Options) => Config;
+  save(): void;
+  restore(): void;
+}
+
+
+interface Options {
   name: string;
-  services: {
-    tiddlywiki: TiddlywikiService;
-    restic: ResticService;
-    nginx: NginxService;
+
+  domainName: string;
+  backup: {
+    backend: BackupBackend;
+    password: string;
   };
 }
 
 
-interface TiddlywikiService {
-  enable: boolean;
-  package: Package;
-  port?: number;
-  dataDir?: string;
-  domainName: string;
-
-  backup: {
-    backend: BackupBackend;
-    password: string;
-    path: string;
+interface Config {
+  systemd: {
+    tmpfiles_rules: string[];
+    services: SystemdService[];
   };
+  services: {
+    nginx: {
+      enable: boolean;
+      config: string;
+    };
+    tiddlywiki: {
+      enable: boolean;
+      package: Package;
+      dataDir: string;
+      listenOptions: {
+        port: number;
+        readers: string;
+        writers: string;
+        credentials?: string;
+      };
+    };
+  };
+  restic_backups: {
+    [key]: {
+      initialize: boolean;
+      paths: string[];
+      repository: string;
+      passwordFile: string;
+      environmentFile: string;
+      timerConfig: {
+        onCalendar: string;
+        accuracySec: number;
+      };
+      pruneOpts: string[];
+    };
+  };
+}
+
+
+interface SystemdService {
+  name: string;
+  description: string;
+  after: string[];
+  requires: string[];
+  wantedBy: string[];
+  service: {
+    type: string;
+    user: string;
+    group: string;
+    environment: string[];
+    execStartPre: string[];
+    execStart: string;
+  };
+
+
+interface Service {
+  enable: boolean;
+
+  package: Package;
+  dataDir?: string;
 
   listenOptions: {
     port: number;
@@ -30,6 +86,10 @@ interface TiddlywikiService {
     writers: string;
     credentials?: string;
   };
+
+
+  config: (options: Options) => Config;
+
 }
 
 
